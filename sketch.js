@@ -1,3 +1,7 @@
+var script = document.createElement('script');
+script.src = 'https://blockchain.info/blocks/100?format=json&cors=true&callback=handleData';
+document.head.appendChild(script);
+
 // Load the first 100 blocks from the blockchain API
 const numBlocks = 100;
 const apiUrl = `https://blockchain.info/blocks/${numBlocks}?format=json`;
@@ -6,9 +10,7 @@ function handleData(data) {
   console.log(data);
 }
 
-var script = document.createElement('script');
-script.src = 'https://blockchain.info/blocks/100?format=json&cors=true&callback=handleData';
-document.head.appendChild(script);
+
 
 
 fetch(apiUrl)
