@@ -1,14 +1,79 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta charset="utf-8" />
-    <title>p5.js Sketch</title>
+    <meta charset="utf-8">
+    <title>Bitcoin Block Art</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.min.js"></script>
     <style>
-      /* Add any custom styles for your sketch here */
+      canvas {
+        display: block;
+        margin: 0 auto;
+      }
     </style>
   </head>
   <body>
-    <script src="sketch.js"></script>
+    <h1>Bitcoin Block Art</h1>
+    <script>
+      function handleData(data) {
+        let blocks = data.blocks.slice(0, 100);
+
+        for (let i = 0; i < blocks.length; i++) {
+          let hash = blocks[i].hash;
+          let size = blocks[i].size;
+          let values = [];
+
+          // Convert the hash to an array of integers
+          for (let j = 0; j < hash.length; j += 2) {
+            let byte = hash.slice(j, j + 2);
+            values.push(parseInt(byte, 16));
+          }
+
+          let r = 255 * values[0] / 255;
+          let g = 255 * values[1] / 255;
+          let b = 255 * values[2] / 255;
+
+          let canvas = document.createElement('canvas');
+          canvas.width = 400;
+          canvas.height = 400;
+          document.body.appendChild(canvas);
+
+          let sketch = function(p) {
+            p.setup = function() {
+              p.createCanvas(400, 400);
+              p.background(0);
+              p.stroke(r, g, b);
+              p.noFill();
+              p.strokeWeight(1);
+              p.translate(200, 400);
+              branch(size, 5);
+            }
+          };
+
+          let p5 = new p5(sketch, canvas);
+
+          function branch(len, weight) {
+            p.strokeWeight(weight);
+            p.line(0, 0, 0, -len);
+            p.translate(0, -len);
+
+            if (len > 4) {
+              p.push();
+              p.rotate(p.radians(30));
+              branch(len * 0.67, weight * 0.67);
+              p.pop();
+
+              p.push();
+              p.rotate(-p.radians(25));
+              branch(len * 0.67, weight * 0.67);
+              p.pop();
+            }
+          }
+        }
+      }
+
+      var script = document.createElement('script');
+      script.src = 'https://blockchain.info/blocks/100?format=json&cors=true&callback=handleData';
+      document.head.appendChild(script);
+    </script>
   </body>
 </html>
